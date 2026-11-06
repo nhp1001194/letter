@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>一封写给你的信</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: #0f0e0d;
+    color: #e8e6e3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 24px;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(circle at 20% 10%, rgba(120, 90, 60, .18), transparent 45%),
+      radial-gradient(circle at 85% 85%, rgba(60, 80, 110, .15), transparent 45%);
+    pointer-events: none;
+  }
+  .wrap { position: relative; width: 100%; max-width: 640px; }
+
+  /* ---- 锁屏 ---- */
+  #lock {
+    transition: opacity .5s ease, transform .5s ease;
+  }
+  #lock.gone { opacity: 0; transform: scale(.96); pointer-events: none; display: none; }
+
+  .lockcard {
+    background: rgba(255,255,255,.035);
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 22px;
+    padding: 44px 30px 36px;
+    text-align: center;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 24px 64px rgba(0,0,0,.5);
+  }
+  .seal {
+    width: 56px; height: 56px; margin: 0 auto 22px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(200,175,130,.5);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+    color: #c8af82;
+    background: rgba(200,175,130,.07);
+  }
+  .lockcard h1 {
+    font-size: 17px; font-weight: 500; letter-spacing: .18em;
+    color: #d8d2c8; margin-bottom: 10px;
+  }
+  .lockcard p.sub {
+    font-size: 12.5px; color: #6f6a63; letter-spacing: .04em;
+    line-height: 1.8; margin-bottom: 30px;
+  }
+
+  .pwd-row { display: flex; gap: 10px; justify-content: center; margin-bottom: 18px; }
+  .pin {
+    width: 46px; height: 56px;
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 12px;
+    text-align: center;
+    font-size: 22px;
+    color: #e8e6e3;
+    letter-spacing: 0;
+    outline: none;
+    transition: border-color .25s, background .25s;
+    font-family: inherit;
+    caret-color: transparent;
+  }
+  .pin:focus { border-color: rgba(200,175,130,.7); background: rgba(200,175,130,.08); }
+  .pin.filled { border-color: rgba(200,175,130,.45); }
+  .pin.err { border-color: #a04a4a; background: rgba(160,74,74,.12); animation: shake .35s; }
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    25% { transform: translateX(-6px); }
+    75% { transform: translateX(6px); }
+  }
+  .msg { font-size: 12.5px; height: 18px; color: #a04a4a; letter-spacing: .04em; }
+
+  /* ---- 信件 ---- */
+  #letter {
+    display: none;
+    opacity: 0;
+    transition: opacity .8s ease;
+  }
+  #letter.show { display: block; opacity: 1; }
+
+  .paper {
+    background: linear-gradient(180deg, rgba(255,255,255,.045), rgba(255,255,255,.022));
+    border: 1px solid rgba(255,255,255,.075);
+    border-radius: 20px;
+    padding: 42px 32px;
+    box-shadow: 0 24px 70px rgba(0,0,0,.55);
+  }
+  .paper h2 {
+    font-size: 15px; font-weight: 500;
+    color: #c8af82; letter-spacing: .2em;
+    margin-bottom: 28px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid rgba(200,175,130,.16);
+  }
+  .paper p {
+    font-size: 15.5px;
+    line-height: 2.15;
+    color: #cfcbc4;
+    margin-bottom: 20px;
+    text-align: justify;
+    word-break: break-word;
+  }
+  .paper p:last-child { margin-bottom: 0; }
+  .paper .sign {
+    margin-top: 34px;
+    padding-top: 22px;
+    border-top: 1px solid rgba(255,255,255,.06);
+    text-align: right;
+    font-size: 13px;
+    color: #7d7770;
+    letter-spacing: .1em;
+  }
+  .fade-in { animation: fadeUp .8s ease forwards; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- 锁屏 -->
+  <div id="lock">
+    <div class="lockcard">
+      <div class="seal">✉</div>
+      <h1>封 存 之 信</h1>
+      <p class="sub">这封信被锁住了<br>请输入六位密码</p>
+      <div class="pwd-row">
+        <input class="pin" type="tel" inputmode="numeric" maxlength="1" data-i="0" autocomplete="off">
+        <input class="pin" type="tel" inputmode="numeric" maxlength="1" data-i="1" autocomplete="off">
+        <input class="pin" type="tel" inputmode="numeric" maxlength="1" data-i="2" autocomplete="off">
+        <input class="pin" type="tel" inputmode="numeric" maxlength="1" data-i="3" autocomplete="off">
+        <input class="pin" type="tel" inputmode="numeric" maxlength="1" data-i="4" autocomplete="off">
+        <input class="pin" type="tel" inputmode="numeric" maxlength="1" data-i="5" autocomplete="off">
+      </div>
+      <div class="msg" id="msg"></div>
+    </div>
+  </div>
+
+  <!-- 信件正文 -->
+  <div id="letter">
+    <div class="paper">
+      <h2>写给 你</h2>
+
+      <p>等你看到这条消息，应该是27年6月9号之后了，高考已经落幕，也就谈不上会不会耽误你考试。思来想去，千言万语堵在胸口，不知道该从何下笔，索性顺着心里的感受写，想到哪写到哪。</p>
+
+      <p>我总觉得，像是你单方面和我告别，心里很难接受，觉得这样对我并不公平。这几天军训，我总是走神，反复想起我们之间的事。我不知道很久以后我再回头看想法会不会变，我只想把此刻心里全部的想法写下来，留作封存。</p>
+
+      <p>我试着猜了你的高考分数：语文105，数学40，日语85，历史65，生物70，政治75，总分440。我习惯去琢磨身边人的走向，在所有人陌生人里面，我自认最懂你，这个分数，我猜应该差不多。我不敢说我对你影响有多大，但最起码，是我劝你选日语，背单词的路也是我帮你指出来的。</p>
+
+      <p>还记得我们最早的几次矛盾，有一次就是背单词。我说百词斩效果不好，你却觉得它够用；如果不是我一直劝你换软件，你可能还在用它。再往前，第一次争执，是因为你离职太晚，想来你现在心里也清楚，我当时说的并没有错。后来又因为你上网课只听课不练习吵架。</p>
+
+      <p>回头看，我踩过的那些坑，你好像都重新走了一遍：跟着网课学一百天，最后发现只是白费功夫；在百词斩打卡五十天，到头来什么都没记住；一个月赶完两本练习册，快速过完一轮，收获寥寥。</p>
+
+      <p>你曾经说，我们的痛苦并不相通。可我一直觉得这句话本身就是伪命题。经历本就不一样，痛苦又怎么可能真正相通？那些弯路，是我实实在在摔过、磕得头破血流，才总结出来的经验。而你，只是被我念叨几句，就直接拿到了我试错后的结论。</p>
+
+      <p>或许你一直觉得我控制欲很强。我总辩解自己没有pua你，但我明白，很多时候你的选择都被我否定，看起来确实很独裁。换作是当年的我，刚开始用百词斩的时候，如果我的日语老师让我换成Moji，我也会觉得他不懂；看到别人稳扎稳打慢慢复习，我当初也会觉得他们效率太低，就算到现在，我依旧很难接受写错题本，哪怕这是大家公认稳妥的学习方法。</p>
+
+      <p>说了这么多，看着好像全是在说你的问题，其实我也说不清自己到底错在哪。我总忍不住强行解释，很多时候是鸡蛋里挑骨头。就像峰哥说的那句：你眼里的你不是你，我眼里的你也不是你，你眼里的我，才是我。</p>
+
+      <p>你看到的我，是你内心感受放大后的样子；而我眼里的你，就是从前那个迷茫、不断试错的我。我太急功近利，一心想着我那个时候就应该这样，其实是想弥补当年那个走弯路的自己。可我忘了，如今的我之所以走出来，本就是依靠那些亲身经历。</p>
+
+      <p>写到这里，思绪已经很乱，不知道还要再说些什么。感念这四年的陪伴，也恭喜你走完高考这一程。往后，不必纠结谁对谁错，所有过往，都是各自的成长。</p>
+
+      <div class="sign">—— 留于此刻</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function () {
+  var PASSWORD = '202769';
+  var pins = Array.prototype.slice.call(document.querySelectorAll('.pin'));
+  var msg = document.getElementById('msg');
+  var lock = document.getElementById('lock');
+  var letter = document.getElementById('letter');
+  var attempts = 0;
+
+  function value() {
+    return pins.map(function (p) { return p.value; }).join('');
+  }
+
+  function clearAll() {
+    pins.forEach(function (p) { p.value = ''; p.classList.remove('filled', 'err'); });
+    pins[0].focus();
+  }
+
+  function fail() {
+    attempts++;
+    msg.textContent = attempts >= 3 ? '密码不正确，请再想想' : '密码不正确';
+    pins.forEach(function (p) { p.classList.add('err'); });
+    setTimeout(function () {
+      clearAll();
+      msg.textContent = '';
+    }, 650);
+  }
+
+  function unlock() {
+    lock.classList.add('gone');
+    letter.classList.add('show');
+    var ps = letter.querySelectorAll('p, .sign');
+    ps.forEach(function (el, i) {
+      el.style.opacity = '0';
+      setTimeout(function () {
+        el.classList.add('fade-in');
+      }, 140 + i * 110);
+    });
+  }
+
+  pins.forEach(function (pin, i) {
+    pin.addEventListener('input', function () {
+      pin.value = pin.value.replace(/[^0-9]/g, '');
+      if (pin.value) {
+        pin.classList.add('filled');
+        if (i < pins.length - 1) pins[i + 1].focus();
+      } else {
+        pin.classList.remove('filled');
+      }
+      if (value().length === 6) {
+        setTimeout(function () {
+          if (value() === PASSWORD) unlock();
+          else fail();
+        }, 130);
+      }
+    });
+
+    pin.addEventListener('keydown', function (e) {
+      if (e.key === 'Backspace' && !pin.value && i > 0) {
+        pins[i - 1].focus();
+        pins[i - 1].value = '';
+        pins[i - 1].classList.remove('filled');
+        e.preventDefault();
+      }
+      if (e.key === 'ArrowLeft' && i > 0) pins[i - 1].focus();
+      if (e.key === 'ArrowRight' && i < pins.length - 1) pins[i + 1].focus();
+    });
+
+    pin.addEventListener('paste', function (e) {
+      e.preventDefault();
+      var text = (e.clipboardData || window.clipboardData).getData('text').replace(/[^0-9]/g, '').slice(0, 6);
+      for (var k = 0; k < text.length && k < pins.length; k++) {
+        pins[k].value = text[k];
+        pins[k].classList.add('filled');
+      }
+      var next = Math.min(text.length, pins.length - 1);
+      pins[next].focus();
+      if (value().length === 6) {
+        setTimeout(function () {
+          if (value() === PASSWORD) unlock();
+          else fail();
+        }, 130);
+      }
+    });
+  });
+
+  pins[0].focus();
+})();
+</script>
+</body>
+</html>
