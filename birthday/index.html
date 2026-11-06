@@ -125,7 +125,18 @@
     color: #a89478;
     letter-spacing: .12em;
     line-height: 1.9;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
   }
+  .sign-mark {
+    font-size: 20px;
+    color: #b8a082;
+    line-height: 1;
+    transform: translateY(1px);
+  }
+  .sign-date { letter-spacing: .14em; }
 
   .footnote {
     margin-top: 32px;
@@ -181,8 +192,8 @@
     <p>祝你一切平安顺遂。</p>
 
     <div class="sign">
-      写在你的生日<br>
-      <span id="sign-date"></span>
+      <span class="sign-mark">ᝰ</span>
+      <span class="sign-date" id="sign-date"></span>
     </div>
   </div>
 
@@ -193,9 +204,8 @@
 
 <script>
 (function () {
-  var d = new Date();
   var el = document.getElementById('sign-date');
-  if (el) el.textContent = d.getFullYear() + ' 年 ' + (d.getMonth() + 1) + ' 月 ' + d.getDate() + ' 日';
+  if (el) el.textContent = '11 月 11 日';
 
   var ps = document.querySelectorAll('.card p, .sign, .footnote');
   ps.forEach(function (p, i) {
